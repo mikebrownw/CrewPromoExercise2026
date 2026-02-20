@@ -1,9 +1,15 @@
-# Retail Analytics SQL Solutions
+# Crew Promo Exercise 2026
 
-This repository contains SQL solutions for retail analytics problems, including:
-- Data model design
-- Latest orders queries
-- Category revenue analysis
-- Top products by category
-- Monthly revenue pivots
-- Performance optimization recommendations
+This repository contains SQL solutions for the promotion exercise.
+
+## Problems
+
+### [Problem 1: Retail Analytics](./Problem-1-Retail)
+- Orders and revenue analysis
+- Latest orders, category revenue, top products, monthly pivots
+
+### Problem 2: [Topic] (Coming soon)
+### Problem 3: [Topic] (Coming soon)
+### Problem 4: [Topic] (Coming soon)
+### Problem 5: [Topic] (Coming soon)
+### Problem 6: [Topic] (Coming soon)
