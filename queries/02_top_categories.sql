@@ -1,0 +1,35 @@
+-- SQL Server (T-SQL)
+-- Purpose: Identify high-performing categories exceeding $1M annual revenue
+-- Used for executive reporting and category management focus
+
+SELECT 
+    p.category,
+    -- Calculate total revenue with proper decimal handling
+    CAST(SUM(oi.qty * oi.price) AS DECIMAL(12,2)) AS total_revenue_2025,
+    -- Additional business context: average order value per category
+    CAST(AVG(oi.qty * oi.price) AS DECIMAL(10,2)) AS avg_transaction_value,
+    COUNT(DISTINCT o.order_id) AS number_of_orders
+FROM 
+    products p
+    INNER JOIN order_items oi 
+        ON p.product_id = oi.product_id
+    INNER JOIN orders o 
+        ON oi.order_id = o.order_id
+WHERE 
+    -- SARGable date filter
+    o.order_date >= '2025-01-01' 
+    AND o.order_date < '2026-01-01'
+    AND o.status = 'completed'  -- Only count revenue from completed orders
+GROUP BY 
+    p.category
+HAVING 
+    -- Post-group filter for million-dollar categories
+    SUM(oi.qty * oi.price) >= 1000000
+ORDER BY 
+    total_revenue_2025 DESC;
+
+/* Business Value:
+   - Identifies categories driving significant revenue
+   - HAVING clause filters after aggregation (more efficient than subquery)
+   - Additional metrics provide deeper insight than just the threshold
+*/
