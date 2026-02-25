@@ -35,3 +35,9 @@ WHERE
     -- AND also include patients with NO appointments at all
 ORDER BY 
     p.created_at DESC;  -- Newest patients first
+
+/* Business Value:
+   - Identifies patients at risk of churn
+   - Helps target outreach campaigns
+   - Newest patients first prioritizes recent acquisitions
+*/
