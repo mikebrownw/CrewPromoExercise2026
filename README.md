@@ -22,3 +22,6 @@ Each problem folder contains:
 
 ## SQL Dialect
 All solutions are written in **SQL Server/T-SQL** (SSMS 17 compatible).
+
+## Misc
+Using [dbfiddle.uk](https://dbfiddle.uk/) SQL Server 2017 to test/run all queries.
