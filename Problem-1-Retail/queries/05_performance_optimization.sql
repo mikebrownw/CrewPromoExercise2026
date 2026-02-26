@@ -20,6 +20,16 @@ FROM sys.indexes
 WHERE OBJECT_NAME(object_id) IN ('orders', 'order_items', 'products', 'customers')
     AND name IS NOT NULL;
 
+--Indexes created in 01_create_tables:
+-- Speeds up: WHERE status = 'completed' AND order_date BETWEEN '2025-01-01' AND '2025-12-31'
+CREATE INDEX idx_orders_status_date ON orders(status, order_date) INCLUDE (customer_id, total_amount);
+
+-- Speeds up: JOIN customers ON orders.customer_id = customer_id
+CREATE INDEX idx_orders_customer ON orders(customer_id) INCLUDE (order_date, status, total_amount);
+
+-- Speeds up: SUM(qty * price) GROUP BY category (for revenue queries)
+CREATE INDEX idx_order_items_product ON order_items(product_id) INCLUDE (qty, price);
+
 -- =======================================================================
 -- PART 2: SARGABILITY DISCUSSION
 -- =======================================================================
@@ -105,91 +115,29 @@ Benefits of partitioning by order_date:
 -- PART 4: MATERIALIZED VIEW FOR MONTHLY REVENUE
 -- =======================================================================
 
-/*
-SQL Server uses Indexed Views (similar to materialized views in other databases)
-This pre-aggregates monthly revenue for instant reporting
-*/
+-- SQL Server (T-SQL) - DB Fiddle Compatible Version
+-- Regular View for monthly revenue (works in DB Fiddle)
 
--- Step 1: Create view with SCHEMABINDING (required for indexed views)
+-- Create the view
 CREATE VIEW vw_monthly_revenue
-WITH SCHEMABINDING
 AS
 SELECT 
-    -- Date bucket for monthly grouping
     DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1) AS month_start,
     p.category,
-    COUNT_BIG(*) AS transaction_count,        -- Required for indexed views
-    COUNT_BIG(DISTINCT o.order_id) AS order_count,
+    COUNT(*) AS transaction_count,
+    COUNT(DISTINCT o.order_id) AS order_count,
     SUM(oi.qty * oi.price) AS total_revenue,
     SUM(oi.qty) AS total_quantity_sold
-FROM dbo.orders o                             -- Must use two-part name
-INNER JOIN dbo.order_items oi ON o.order_id = oi.order_id
-INNER JOIN dbo.products p ON oi.product_id = p.product_id
+FROM orders o
+INNER JOIN order_items oi ON o.order_id = oi.order_id
+INNER JOIN products p ON oi.product_id = p.product_id
 WHERE o.status = 'completed'
 GROUP BY 
     DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1),
     p.category;
-GO
 
--- Step 2: Create unique clustered index to materialize the view
--- This physically stores the aggregated data
-CREATE UNIQUE CLUSTERED INDEX IX_vw_monthly_revenue 
-ON vw_monthly_revenue (month_start, category);
-GO
-
--- Step 3: Add non-clustered indexes for different query patterns
-CREATE NONCLUSTERED INDEX IX_vw_monthly_revenue_category 
-ON vw_monthly_revenue (category, month_start) 
-INCLUDE (total_revenue);
-GO
-
-/*
-Benefits of Indexed View:
-- Data pre-aggregated and stored physically
-- Queries against this view are instantaneous
-- Automatically maintained by SQL Server on data changes
-- Perfect for dashboards and recurring reports
-
-Example query using the materialized view:
-*/
-SELECT 
-    category,
-    SUM(total_revenue) AS revenue_2025
-FROM vw_monthly_revenue WITH (NOEXPAND)  -- Hint to use indexed view directly
+-- Test the view (run this separately)
+SELECT * FROM vw_monthly_revenue 
 WHERE month_start >= '2025-01-01' 
   AND month_start < '2026-01-01'
-GROUP BY category
-HAVING SUM(total_revenue) >= 1000000;
-
--- =======================================================================
--- PART 5: COMPREHENSIVE INDEXING STRATEGY SUMMARY
--- =======================================================================
-
-/*
-┌─────────────────┬──────────────────────────────┬─────────────────────────────┐
-│ Table           │ Index                        │ Purpose                     │
-├─────────────────┼──────────────────────────────┼─────────────────────────────┤
-│ orders          │ PK (order_id)                 │ Uniqueness, lookups         │
-│ orders          │ idx_orders_status_date        │ Status + date filtering     │
-│ orders          │ idx_orders_customer_date      │ Customer history            │
-│ order_items     │ PK (order_id, product_id)     │ Uniqueness                  │
-│ order_items     │ idx_order_items_product       │ Product aggregations        │
-│ products        │ PK (product_id)                │ Uniqueness                  │
-│ products        │ idx_products_category         │ Category analysis           │
-│ customers       │ PK (customer_id)               │ Uniqueness                  │
-├─────────────────┼──────────────────────────────┼─────────────────────────────┤
-│ Materialized    │ IX_vw_monthly_revenue         │ Monthly revenue pre-aggreg. │
-└─────────────────┴──────────────────────────────┴─────────────────────────────┘
-
-Estimated Performance Improvements:
-- Simple SELECT with indexes: 10-50x faster
-- Aggregations with covering indexes: 5-20x faster
-- Partitioned tables: 2-10x faster for range scans
-- Materialized views: 100-1000x faster for pre-aggregated queries
-
-Storage Overhead Estimate (for 10M orders):
-- Base tables: ~2-3 GB
-- Indexes: additional 1-2 GB
-- Materialized view: ~100-200 MB
-- Total: ~3-5 GB vs 2-3 GB without indexes
-*/
+ORDER BY month_start, category;
