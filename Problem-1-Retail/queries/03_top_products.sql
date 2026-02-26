@@ -1,5 +1,5 @@
 -- SQL Server (T-SQL) using Common Table Expression and Window Function
--- Purpose: Rank products within categories to identify top performers
+-- Purpose: For each category, list the top 3 products by revenue in 2025.
 -- Handles ties using DENSE_RANK (gives same rank to ties, no gaps)
 
 WITH product_revenue AS (
