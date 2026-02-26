@@ -11,57 +11,14 @@
 Based on the common query patterns in Problem 1, here are the optimal indexes:
 */
 
--- 1. Composite index for order status + date (most frequent filter)
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_orders_status_date' AND object_id = OBJECT_ID('orders'))
-BEGIN
-    CREATE NONCLUSTERED INDEX idx_orders_status_date 
-    ON orders(status, order_date) 
-    INCLUDE (customer_id, total_amount);
-    PRINT 'Index idx_orders_status_date created';
-END
-ELSE
-BEGIN
-    PRINT 'Index idx_orders_status_date already exists';
-END;
-
--- 2. Index for customer history lookups (joins to customers)
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_orders_customer_date' AND object_id = OBJECT_ID('orders'))
-BEGIN
-    CREATE NONCLUSTERED INDEX idx_orders_customer_date 
-    ON orders(customer_id, order_date DESC) 
-    INCLUDE (status, total_amount);
-    PRINT 'Index idx_orders_customer_date created';
-END
-ELSE
-BEGIN
-    PRINT 'Index idx_orders_customer_date already exists';
-END;
-
--- 3. Index for order_items joins and aggregations
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_order_items_product' AND object_id = OBJECT_ID('order_items'))
-BEGIN
-    CREATE NONCLUSTERED INDEX idx_order_items_product 
-    ON order_items(product_id) 
-    INCLUDE (qty, price);
-    PRINT 'Index idx_order_items_product created';
-END
-ELSE
-BEGIN
-    PRINT 'Index idx_order_items_product already exists';
-END;
-
--- 4. Index for products category lookups
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_products_category' AND object_id = OBJECT_ID('products'))
-BEGIN
-    CREATE NONCLUSTERED INDEX idx_products_category 
-    ON products(category) 
-    INCLUDE (product_id, name);
-    PRINT 'Index idx_products_category created';
-END
-ELSE
-BEGIN
-    PRINT 'Index idx_products_category already exists';
-END;
+-- Show all indexes on your tables
+SELECT 
+    OBJECT_NAME(object_id) AS table_name,
+    name AS index_name,
+    type_desc
+FROM sys.indexes
+WHERE OBJECT_NAME(object_id) IN ('orders', 'order_items', 'products', 'customers')
+    AND name IS NOT NULL;
 
 -- =======================================================================
 -- PART 2: SARGABILITY DISCUSSION
