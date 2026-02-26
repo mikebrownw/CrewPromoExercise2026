@@ -112,32 +112,28 @@ Benefits of partitioning by order_date:
 */
 
 -- =======================================================================
--- PART 4: MATERIALIZED VIEW FOR MONTHLY REVENUE
+-- PART 4: MATERIALIZED CTE (view alternative) FOR MONTHLY REVENUE
 -- =======================================================================
 
--- SQL Server (T-SQL) - DB Fiddle Compatible Version
--- Regular View for monthly revenue (works in DB Fiddle)
-
--- Create the view
-CREATE VIEW vw_monthly_revenue
-AS
-SELECT 
-    DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1) AS month_start,
-    p.category,
-    COUNT(*) AS transaction_count,
-    COUNT(DISTINCT o.order_id) AS order_count,
-    SUM(oi.qty * oi.price) AS total_revenue,
-    SUM(oi.qty) AS total_quantity_sold
-FROM orders o
-INNER JOIN order_items oi ON o.order_id = oi.order_id
-INNER JOIN products p ON oi.product_id = p.product_id
-WHERE o.status = 'completed'
-GROUP BY 
-    DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1),
-    p.category;
-
--- Test the view (run this separately)
-SELECT * FROM vw_monthly_revenue 
+--
+WITH monthly_revenue AS (
+    SELECT 
+        DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1) AS month_start,
+        p.category,
+        COUNT(*) AS transaction_count,
+        COUNT(DISTINCT o.order_id) AS order_count,
+        SUM(oi.qty * oi.price) AS total_revenue,
+        SUM(oi.qty) AS total_quantity_sold
+    FROM orders o
+    INNER JOIN order_items oi ON o.order_id = oi.order_id
+    INNER JOIN products p ON oi.product_id = p.product_id
+    WHERE o.status = 'completed'
+    GROUP BY 
+        DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1),
+        p.category
+)
+-- Now query the CTE
+SELECT * FROM monthly_revenue
 WHERE month_start >= '2025-01-01' 
   AND month_start < '2026-01-01'
-ORDER BY month_start, category;
+ORDER BY total_revenue DESC;
