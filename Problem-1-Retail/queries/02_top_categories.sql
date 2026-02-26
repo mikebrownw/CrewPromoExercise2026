@@ -15,7 +15,7 @@ FROM
     INNER JOIN orders o 
         ON oi.order_id = o.order_id
 WHERE 
-    -- SARGable date filter
+    -- SARGable date filter (no functions)
     o.order_date >= '2025-01-01' 
     AND o.order_date < '2026-01-01'
     AND o.status = 'completed'  -- Only count revenue from completed orders
