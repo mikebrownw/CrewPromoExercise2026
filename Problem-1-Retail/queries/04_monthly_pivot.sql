@@ -1,6 +1,5 @@
 -- SQL Server (T-SQL) using PIVOT operator
--- Purpose: Create a matrix report showing monthly revenue trends by category
--- Ideal for executive dashboards and trend analysis
+-- Purpose: Pivot 2025 monthly revenue per category into 12 columns.
 
 WITH monthly_category_revenue AS (
     -- Base data: aggregate revenue by category and month
