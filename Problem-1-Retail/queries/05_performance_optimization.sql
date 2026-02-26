@@ -61,55 +61,64 @@ WHERE order_date >= '2025-01-01'
 */
 
 -- =======================================================================
--- PART 3: PARTITIONING STRATEGY
+-- PARTITIONING EXPLANATION (Concept only - for discussion)
 -- =======================================================================
 
 /*
-For tables with millions of rows, partitioning by date improves performance:
+Partitioning splits a large table into smaller pieces based on a column (like date).
 
-1. Create partition function (by year or month)
-*/
+EXAMPLE CONCEPT (not executable in DB Fiddle):
+
+Instead of one huge table:
+    orders (10 million rows)
+
+You split into yearly partitions:
+    Partition 1: orders_2023 (2 million rows)
+    Partition 2: orders_2024 (3 million rows)  
+    Partition 3: orders_2025 (4 million rows)
+    Partition 4: orders_2026 (1 million rows)
+
+BENEFITS:
+- Queries only scan relevant partition(s), not entire table
+- Easier to archive old data (drop entire partition)
+- Faster maintenance (rebuild indexes per partition)
+
+FOR YOUR QUERY:
+    SELECT * FROM orders WHERE order_date >= '2025-01-01'
+    
+Without partition: scans all 10M rows
+With partition: scans only 2025 partition (4M rows) - 60% faster!
+
+IN REAL SQL SERVER, the syntax would be:
+
+-- Create partition function (defines boundaries)
 CREATE PARTITION FUNCTION pf_order_date (DATE)
-AS RANGE RIGHT FOR VALUES (
-    '2023-01-01', '2024-01-01', '2025-01-01', '2026-01-01'
-);
-GO
+AS RANGE RIGHT FOR VALUES ('2023-01-01', '2024-01-01', '2025-01-01', '2026-01-01');
 
-/*
-2. Create partition scheme mapping to filegroups
-   (Assumes filegroups FG2023, FG2024, FG2025, FG2026, FG_FUTURE exist)
-*/
+-- Create partition scheme (maps to filegroups)
 CREATE PARTITION SCHEME ps_order_date
 AS PARTITION pf_order_date
 TO (FG2023, FG2024, FG2025, FG2026, FG_FUTURE);
-GO
 
-/*
-3. Create partitioned table (or alter existing)
-*/
--- Option A: Create new partitioned table
+-- Create partitioned table
 CREATE TABLE orders_partitioned (
-    order_id INT NOT NULL,
-    order_date DATETIME2 NOT NULL,
-    customer_id INT NOT NULL,
+    order_id INT,
+    order_date DATE,
+    customer_id INT,
     status VARCHAR(20),
-    total_amount DECIMAL(10,2),
-    CONSTRAINT PK_orders_partitioned PRIMARY KEY (order_id, order_date)  -- Partition key in PK
+    total_amount DECIMAL(10,2)
 ) ON ps_order_date(order_date);
-GO
-
--- Option B: Partition existing table (SQL Server 2016+)
--- ALTER TABLE orders DROP CONSTRAINT PK_orders;
--- CREATE CLUSTERED INDEX IX_orders_date ON orders(order_date) ON ps_order_date(order_date);
-
-/*
-Benefits of partitioning by order_date:
-- Partition elimination: queries only scan relevant year(s)
-  e.g., WHERE order_date >= '2025-01-01' only scans 2025 partition
-- Easier data archival: can switch out old partitions
-- Parallel scanning: can scan partitions simultaneously
-- Improved maintenance: rebuild indexes per partition
 */
+
+-- Since DB Fiddle doesn't support partitioning,
+-- here's a query to show how partitioning would help:
+SELECT 
+    YEAR(order_date) AS year,
+    COUNT(*) AS row_count,
+    'Would be in separate partition' AS partition_benefit
+FROM orders
+GROUP BY YEAR(order_date)
+ORDER BY year;
 
 -- =======================================================================
 -- PART 4: MATERIALIZED CTE (view alternative) FOR MONTHLY REVENUE
