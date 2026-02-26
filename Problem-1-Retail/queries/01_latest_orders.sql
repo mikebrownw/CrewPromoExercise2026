@@ -1,5 +1,5 @@
 -- SQL Server (T-SQL)
--- Purpose: Retrieve the 10 most recent completed orders from 2025
+-- Purpose: Return the latest 10 completed orders in 2025, with customer full name and order total.
 -- Includes customer name and order total for reporting/export
 
 SELECT TOP 10
