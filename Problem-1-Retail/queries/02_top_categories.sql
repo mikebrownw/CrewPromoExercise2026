@@ -1,6 +1,5 @@
 -- SQL Server (T-SQL)
 -- Purpose: Identify high-performing categories exceeding $1M annual revenue
--- Used for executive reporting and category management focus
 
 SELECT 
     p.category,
