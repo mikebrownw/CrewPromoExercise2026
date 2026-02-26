@@ -115,7 +115,6 @@ Benefits of partitioning by order_date:
 -- PART 4: MATERIALIZED CTE (view alternative) FOR MONTHLY REVENUE
 -- =======================================================================
 
---
 WITH monthly_revenue AS (
     SELECT 
         DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1) AS month_start,
@@ -132,8 +131,9 @@ WITH monthly_revenue AS (
         DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1),
         p.category
 )
--- Now query the CTE
-SELECT * FROM monthly_revenue
+-- This SELECT is part of the same statement, not inside the CTE
+SELECT * 
+FROM monthly_revenue
 WHERE month_start >= '2025-01-01' 
   AND month_start < '2026-01-01'
 ORDER BY total_revenue DESC;
