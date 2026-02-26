@@ -11,4 +11,4 @@
 2. Show categories with ≥ $1M revenue in 2025.
 3. For each category, list the top 3 products by revenue in 2025.
 4. Pivot 2025 monthly revenue per category into 12 columns.
-5. Discuss indexes/partitions for performance optimization.
+5. Discuss indexes/partitions for performance optimization; include SARGability and materialized views.
