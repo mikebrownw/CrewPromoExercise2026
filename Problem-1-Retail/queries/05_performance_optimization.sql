@@ -22,8 +22,7 @@ END
 ELSE
 BEGIN
     PRINT 'Index idx_orders_status_date already exists';
-END
-GO
+END;
 
 -- 2. Index for customer history lookups (joins to customers)
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_orders_customer_date' AND object_id = OBJECT_ID('orders'))
@@ -36,8 +35,7 @@ END
 ELSE
 BEGIN
     PRINT 'Index idx_orders_customer_date already exists';
-END
-GO
+END;
 
 -- 3. Index for order_items joins and aggregations
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_order_items_product' AND object_id = OBJECT_ID('order_items'))
@@ -50,8 +48,7 @@ END
 ELSE
 BEGIN
     PRINT 'Index idx_order_items_product already exists';
-END
-GO
+END;
 
 -- 4. Index for products category lookups
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_products_category' AND object_id = OBJECT_ID('products'))
@@ -64,8 +61,7 @@ END
 ELSE
 BEGIN
     PRINT 'Index idx_products_category already exists';
-END
-GO
+END;
 
 -- =======================================================================
 -- PART 2: SARGABILITY DISCUSSION
