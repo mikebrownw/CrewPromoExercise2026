@@ -4,7 +4,7 @@
 -- (status, order_date, customer_id); discuss SARGability and materialized view(s) for monthly revenue.
 
 -- =======================================================================
--- PART 1: RECOMMENDED INDEXES
+-- PART 1: RECOMMENDED INDEXES (with safety checks)
 -- =======================================================================
 
 /*
@@ -12,43 +12,60 @@ Based on the common query patterns in Problem 1, here are the optimal indexes:
 */
 
 -- 1. Composite index for order status + date (most frequent filter)
-CREATE NONCLUSTERED INDEX idx_orders_status_date 
-ON orders(status, order_date) 
-INCLUDE (customer_id, total_amount);
-/*
-Why this index:
-- Supports WHERE status = 'completed' AND order_date BETWEEN '2025-01-01' AND '2025-12-31'
-- INCLUDE clause adds columns without increasing index size much
-- Covering index means SQL Server doesn't need to read the table at all
-*/
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_orders_status_date' AND object_id = OBJECT_ID('orders'))
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_orders_status_date 
+    ON orders(status, order_date) 
+    INCLUDE (customer_id, total_amount);
+    PRINT 'Index idx_orders_status_date created';
+END
+ELSE
+BEGIN
+    PRINT 'Index idx_orders_status_date already exists';
+END
+GO
 
 -- 2. Index for customer history lookups (joins to customers)
-CREATE NONCLUSTERED INDEX idx_orders_customer_date 
-ON orders(customer_id, order_date DESC) 
-INCLUDE (status, total_amount);
-/*
-Why:
-- Optimizes "recent orders by customer" queries
-- DESC order matches typical "latest first" requirements
-- Used in joins between orders and customers
-*/
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_orders_customer_date' AND object_id = OBJECT_ID('orders'))
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_orders_customer_date 
+    ON orders(customer_id, order_date DESC) 
+    INCLUDE (status, total_amount);
+    PRINT 'Index idx_orders_customer_date created';
+END
+ELSE
+BEGIN
+    PRINT 'Index idx_orders_customer_date already exists';
+END
+GO
 
 -- 3. Index for order_items joins and aggregations
-CREATE NONCLUSTERED INDEX idx_order_items_product 
-ON order_items(product_id) 
-INCLUDE (qty, price);
-/*
-Why:
-- Speeds up category/product revenue aggregations
-- Covering index prevents key lookups to base table
-- Critical for queries that SUM(qty * price) GROUP BY product/category
-*/
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_order_items_product' AND object_id = OBJECT_ID('order_items'))
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_order_items_product 
+    ON order_items(product_id) 
+    INCLUDE (qty, price);
+    PRINT 'Index idx_order_items_product created';
+END
+ELSE
+BEGIN
+    PRINT 'Index idx_order_items_product already exists';
+END
+GO
 
--- 4. Composite index for category analysis (if you add category to order_items)
--- Note: In current schema, category is only in products table
-CREATE NONCLUSTERED INDEX idx_products_category 
-ON products(category) 
-INCLUDE (product_id, name);
+-- 4. Index for products category lookups
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_products_category' AND object_id = OBJECT_ID('products'))
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_products_category 
+    ON products(category) 
+    INCLUDE (product_id, name);
+    PRINT 'Index idx_products_category created';
+END
+ELSE
+BEGIN
+    PRINT 'Index idx_products_category already exists';
+END
+GO
 
 -- =======================================================================
 -- PART 2: SARGABILITY DISCUSSION
