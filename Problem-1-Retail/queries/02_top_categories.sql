@@ -1,5 +1,5 @@
 -- SQL Server (T-SQL)
--- Purpose: Identify high-performing categories exceeding $1M annual revenue
+-- Purpose: Show categories with ≥ $1M revenue in 2025.
 
 SELECT 
     p.category,
