@@ -2,6 +2,8 @@
 -- Purpose: Identify patients who had 3 or more consecutive NO_SHOW appointments
 -- Uses window functions to detect patterns in appointment sequences
 
+PRINT '========== QUERY 2: Return patients who had 3 consecutive NO_SHOWs at any point. ==========';
+
 WITH patient_appointments AS (
     -- First, get all appointments in order per patient
     SELECT 
