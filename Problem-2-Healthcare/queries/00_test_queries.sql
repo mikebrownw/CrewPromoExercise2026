@@ -2,7 +2,7 @@ SELECT '===== PATIENTS =====' AS [Header];
 SELECT * FROM patients;
 
 SELECT '===== APPOINTMENTS =====' AS [Header];
-SELECT * FROM appointments;
+SELECT * FROM appointments ORDER BY appt_date;
 
 --------------------------------------------------
 
