@@ -25,7 +25,7 @@ GROUP BY
     p.category
 HAVING 
     -- Post-group filter for million-dollar categories
-    SUM(oi.qty * oi.price) >= 1000000
+    SUM(oi.qty * oi.price) >= 1000
 ORDER BY 
     total_revenue_2025 DESC;
 
