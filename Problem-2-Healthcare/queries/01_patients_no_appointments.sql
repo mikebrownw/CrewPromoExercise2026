@@ -1,3 +1,5 @@
+PRINT '========== QUERY 1: List patients with no appointments in the last 12 months, newest patients first. ==========';
+
 SELECT 
     p.patient_id,
     p.name,
