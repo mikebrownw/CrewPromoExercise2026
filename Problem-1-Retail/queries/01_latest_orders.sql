@@ -2,6 +2,8 @@
 -- Purpose: Return the latest 10 completed orders in 2025, with customer full name and order total.
 -- Includes customer name and order total for reporting/export
 
+PRINT '========== QUERY 1: Return the latest 10 completed orders in 2025, with customer full name and order total. ==========';
+
 SELECT TOP 10
     -- Concatenate customer name for display
     CONCAT(c.first_name, ' ', c.last_name) AS customer_full_name,
