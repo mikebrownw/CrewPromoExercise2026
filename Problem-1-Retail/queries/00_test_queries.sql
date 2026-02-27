@@ -6,5 +6,5 @@ SELECT * FROM products;
 SELECT * FROM orders
 ORDER BY order_id ASC;
 
-SELECT * FROM customers
+SELECT * FROM order_items
 ORDER BY order_id ASC;
