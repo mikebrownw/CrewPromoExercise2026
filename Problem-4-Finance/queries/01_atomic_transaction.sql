@@ -4,7 +4,7 @@
 
 PRINT '===== Atomic Transactions: Suppose your application needs to debit account 1 by $100 and
 credit account 2 by $100, write some sql code to update those accounts; rollback on any
-error. ====='
+error. =====';
     
     BEGIN TRANSACTION;
 BEGIN TRY
