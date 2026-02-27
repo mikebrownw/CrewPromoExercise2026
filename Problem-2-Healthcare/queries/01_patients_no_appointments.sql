@@ -38,5 +38,3 @@ WHERE
     )
 ORDER BY p.created_at DESC;
     )
-ORDER BY 
-    p.created_at DESC;
