@@ -1,5 +1,6 @@
 -- SQL Server (T-SQL)
 -- Sample Data for Healthcare Analytics
+-- All SCHEDULED appointments are now in the future using GETDATE()
 
 -- Insert sample patients (with mix of regions and creation dates)
 INSERT INTO patients (patient_id, name, birth_date, created_at, region) VALUES
@@ -19,9 +20,9 @@ INSERT INTO patients (patient_id, name, birth_date, created_at, region) VALUES
 (1014, 'Jessica Miller', '1993-08-09', '2023-09-15', 'West'),
 (1015, 'Daniel Wilson', '1987-04-22', '2024-01-10', 'South');
 
--- Insert sample appointments (spread across 2+ years)
+-- Insert sample appointments with future SCHEDULED dates
 INSERT INTO appointments (appt_id, patient_id, appt_date, status) VALUES
--- 2024 appointments
+-- 2024 appointments (historical)
 (20001, 1001, '2024-01-15', 'COMPLETED'),
 (20002, 1002, '2024-01-22', 'COMPLETED'),
 (20003, 1003, '2024-02-03', 'COMPLETED'),
@@ -34,7 +35,7 @@ INSERT INTO appointments (appt_id, patient_id, appt_date, status) VALUES
 (20010, 1002, '2024-05-14', 'COMPLETED'),
 (20011, 1003, '2024-05-28', 'COMPLETED'),
 (20012, 1009, '2024-06-10', 'COMPLETED'),
-(20013, 1004, '2024-06-24', 'SCHEDULED'), -- Cancelled? Actually this was scheduled for future but now past
+(20013, 1004, '2024-06-24', 'COMPLETED'),  -- Changed from SCHEDULED to COMPLETED
 (20014, 1005, '2024-07-08', 'COMPLETED'),
 (20015, 1010, '2024-07-22', 'COMPLETED'),
 (20016, 1001, '2024-08-05', 'NO_SHOW'),
@@ -43,7 +44,7 @@ INSERT INTO appointments (appt_id, patient_id, appt_date, status) VALUES
 (20019, 1011, '2024-09-16', 'COMPLETED'),
 (20020, 1002, '2024-09-30', 'NO_SHOW'),
 
--- 2025 appointments
+-- 2025 appointments (historical)
 (20021, 1003, '2025-01-10', 'COMPLETED'),
 (20022, 1008, '2025-01-24', 'COMPLETED'),
 (20023, 1012, '2025-02-07', 'COMPLETED'),
@@ -57,37 +58,37 @@ INSERT INTO appointments (appt_id, patient_id, appt_date, status) VALUES
 (20031, 1007, '2025-05-30', 'COMPLETED'),
 (20032, 1014, '2025-06-13', 'COMPLETED'),
 (20033, 1002, '2025-06-27', 'COMPLETED'),
-(20034, 1011, '2025-07-11', 'SCHEDULED'),
-(20035, 1003, '2025-07-25', 'SCHEDULED'),
-(20036, 1015, '2025-08-08', 'SCHEDULED'),
-(20037, 1008, '2025-08-22', 'SCHEDULED'),
-(20038, 1004, '2025-09-05', 'SCHEDULED'),
-(20039, 1012, '2025-09-19', 'SCHEDULED'),
-(20040, 1005, '2025-10-03', 'SCHEDULED'),
 
--- Patient 1001's appointments (showing pattern)
+-- FUTURE SCHEDULED appointments (using DATEADD)
+(20034, 1011, DATEADD(day, 30, GETDATE()), 'SCHEDULED'),  -- 30 days from now
+(20035, 1003, DATEADD(day, 45, GETDATE()), 'SCHEDULED'),  -- 45 days from now
+(20036, 1015, DATEADD(day, 60, GETDATE()), 'SCHEDULED'),  -- 60 days from now
+(20037, 1008, DATEADD(day, 75, GETDATE()), 'SCHEDULED'),  -- 75 days from now
+(20038, 1004, DATEADD(day, 90, GETDATE()), 'SCHEDULED'),  -- 90 days from now
+(20039, 1012, DATEADD(day, 120, GETDATE()), 'SCHEDULED'), -- 120 days from now
+(20040, 1005, DATEADD(day, 150, GETDATE()), 'SCHEDULED'), -- 150 days from now
+
+-- Patient 1001's appointments (historical pattern)
 (20041, 1001, '2024-11-12', 'COMPLETED'),
 (20042, 1001, '2025-02-15', 'COMPLETED'),
 (20043, 1001, '2025-05-20', 'NO_SHOW'),
 (20044, 1001, '2025-06-25', 'NO_SHOW'),
 (20045, 1001, '2025-07-30', 'NO_SHOW'), -- 3 consecutive NO_SHOWs!
 
--- Patient 1006's appointments (no shows pattern)
+-- Patient 1006's appointments (historical pattern)
 (20046, 1006, '2024-12-05', 'NO_SHOW'),
 (20047, 1006, '2025-01-09', 'NO_SHOW'),
 (20048, 1006, '2025-02-13', 'NO_SHOW'), -- 3 consecutive NO_SHOWs
 (20049, 1006, '2025-03-20', 'COMPLETED'),
 
--- Patient 1013 (newer patient, no recent appointments - for question 1)
+-- Patient 1013 (older appointment - for question 1)
 (20050, 1013, '2024-08-15', 'COMPLETED'), -- Last appt >12 months ago
 
--- Patient 1014 (new patient, no appointments at all)
--- (No appointments for 1014 intentionally)
+-- Patient 1014 intentionally has NO appointments
 
--- Patient 1015 (brand new, only future appointments)
-(20051, 1015, '2025-08-08', 'SCHEDULED'), -- Future only
+-- Patient 1015 has a future SCHEDULED appointment (already added above: 20036)
 
--- Additional appointments to test date ranges
+-- Additional historical appointments
 (20052, 1002, '2024-10-15', 'COMPLETED'),
 (20053, 1002, '2024-11-19', 'COMPLETED'),
 (20054, 1007, '2024-12-22', 'COMPLETED'),
