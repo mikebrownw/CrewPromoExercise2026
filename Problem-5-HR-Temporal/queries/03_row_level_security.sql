@@ -5,7 +5,7 @@
 -- PART 1: SQL SERVER IMPLEMENTATION
 -- =======================================================================
 
--- METHOD 1: Using a security predicate function (SQL Server 2016+)
+-- METHOD:  Using a security predicate function (SQL Server 2016+)
 
 -- First, create a schema for security
 CREATE SCHEMA Security;
@@ -50,73 +50,8 @@ ADD FILTER PREDICATE Security.fn_userRegionPredicate(region)
 ON dbo.users;
 GO
 
--- METHOD 2: Using a view with context_info (SQL Server)
--- Simpler approach if you don't have SQL Server 2016+
-
--- First, create a table mapping database users to regions
-CREATE TABLE dbo.user_region_mapping (
-    db_username VARCHAR(100) PRIMARY KEY,
-    allowed_region VARCHAR(50),
-    role VARCHAR(50)
-);
-
--- Insert mappings
-INSERT INTO dbo.user_region_mapping VALUES
-('DOMAIN\john_analyst', 'North America', 'analyst'),
-('DOMAIN\jane_analyst', 'Europe', 'analyst'),
-('DOMAIN\admin_user', 'ALL', 'admin');
-
--- Create a view that filters by current user
-CREATE VIEW dbo.vw_users_secured
-AS
-SELECT u.*
-FROM dbo.users u
-CROSS APPLY (
-    SELECT allowed_region 
-    FROM dbo.user_region_mapping 
-    WHERE db_username = SUSER_NAME()
-) perm
-WHERE perm.allowed_region = 'ALL' 
-   OR u.region = perm.allowed_region;
-GO
-
--- Test the view (will only show users in your region)
-SELECT * FROM dbo.vw_users_secured;
-
--- METHOD 3: Using a stored procedure with parameter
-CREATE PROCEDURE sp_get_users_by_region
-    @UserRole VARCHAR(50) = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    DECLARE @UserRegion VARCHAR(50);
-    DECLARE @IsAdmin BIT = 0;
-    
-    -- Get current user's region and role
-    SELECT 
-        @UserRegion = allowed_region,
-        @IsAdmin = CASE WHEN role = 'admin' THEN 1 ELSE 0 END
-    FROM dbo.user_region_mapping
-    WHERE db_username = SUSER_NAME();
-    
-    -- Return data with appropriate filtering
-    IF @IsAdmin = 1
-    BEGIN
-        -- Admin sees all
-        SELECT * FROM dbo.users;
-    END
-    ELSE
-    BEGIN
-        -- Analyst sees only their region
-        SELECT * FROM dbo.users
-        WHERE region = @UserRegion;
-    END
-END;
-GO
-
 -- =======================================================================
--- PART 2: POSTGRESQL IMPLEMENTATION (as requested)
+-- PART 2: POSTGRESQL IMPLEMENTATION
 -- =======================================================================
 
 /*
@@ -172,51 +107,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON users TO admin_role;
 */
 
 -- =======================================================================
--- PART 3: APPLICATION-LEVEL SECURITY (Alternative)
--- =======================================================================
-
--- Sometimes simpler to handle in application layer
-CREATE PROCEDURE sp_get_users_api
-    @RequestingUserID INT,
-    @RequestedRegion VARCHAR(50) = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    -- Get requesting user's role and region
-    DECLARE @UserRole VARCHAR(50);
-    DECLARE @UserRegion VARCHAR(50);
-    
-    SELECT 
-        @UserRole = JSON_VALUE(profile_json, '$.role'),
-        @UserRegion = region
-    FROM users
-    WHERE user_id = @RequestingUserID;
-    
-    -- Apply security
-    IF @UserRole = 'admin'
-    BEGIN
-        -- Admin can see all or filter by requested region
-        IF @RequestedRegion IS NULL
-            SELECT * FROM users;
-        ELSE
-            SELECT * FROM users WHERE region = @RequestedRegion;
-    END
-    ELSE IF @UserRole = 'analyst'
-    BEGIN
-        -- Analysts can only see their own region
-        SELECT * FROM users WHERE region = @UserRegion;
-    END
-    ELSE
-    BEGIN
-        -- Others see nothing
-        SELECT 'Access Denied' AS Message;
-    END
-END;
-GO
-
--- =======================================================================
--- PART 4: TESTING SECURITY
+-- PART 3: TESTING SECURITY
 -- =======================================================================
 
 -- Create test users (in real DB, these would be actual logins)
@@ -239,14 +130,3 @@ REVERT;
 EXECUTE AS USER = 'admin_user';
 SELECT 'Admin User' AS UserName, * FROM dbo.vw_users_secured;
 REVERT;
-
-/* Summary of Security Approaches:
-
-| Approach | Pros | Cons | Best For |
-|----------|------|------|----------|
-| RLS (SQL Server 2016+) | Centralized, enforced at DB level | Requires newer SQL Server | Enterprise apps |
-| Views with SUSER_NAME() | Works in all versions | Can be bypassed if direct table access | Legacy systems |
-| Stored Procedures | Full control, auditable | Must use procs for all access | API-driven apps |
-| Application Layer | Flexible, cross-platform | Can be forgotten | Microservices |
-| PostgreSQL RLS | Built-in, elegant | PostgreSQL only | PostgreSQL shops |
-*/
