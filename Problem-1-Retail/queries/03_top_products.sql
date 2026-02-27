@@ -2,6 +2,8 @@
 -- Purpose: For each category, list the top 3 products by revenue in 2025.
 -- Handles ties using DENSE_RANK (gives same rank to ties, no gaps)
 
+PRINT '========== QUERY 3: For each category, list the top 3 products by revenue in 2025. ==========';
+
 WITH product_revenue AS (
     -- First, calculate revenue per product
     SELECT 
