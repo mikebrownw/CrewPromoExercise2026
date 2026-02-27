@@ -12,6 +12,9 @@ Based on the common query patterns in Problem 1, here are the optimal indexes:
 */
 
 -- Show all indexes on your tables
+
+PRINT '========== QUERY 5: Show all indexes on your tables ==========';
+
 SELECT 
     OBJECT_NAME(object_id) AS table_name,
     name AS index_name,
@@ -123,6 +126,8 @@ ORDER BY year;
 -- =======================================================================
 -- PART 4: MATERIALIZED CTE (view alternative) FOR MONTHLY REVENUE
 -- =======================================================================
+
+PRINT '========== QUERY 5: MATERIALIZED CTE (view alternative) FOR MONTHLY REVENUE ==========';
 
 WITH monthly_revenue AS (
     SELECT 
