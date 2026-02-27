@@ -61,3 +61,25 @@ GO
    - Should return patients 1011, 1003, 1015, 1008, 1004, 1012, 1005 from sample data
    - With region filter, should only return matching patients
 */
+
+--------------------------------------------------------
+
+-- Test the logic without creating a procedure (Parameterized Query)
+DECLARE @Region VARCHAR(50) = NULL;  -- Change to 'Northeast' to test filtering
+DECLARE @FromDate DATE = '2025-07-01';
+DECLARE @ToDate DATE = '2025-12-31';
+
+SELECT 
+    a.appt_id,
+    a.appt_date,
+    a.status,
+    p.patient_id,
+    p.name AS patient_name,
+    p.region
+FROM appointments a
+INNER JOIN patients p ON a.patient_id = p.patient_id
+WHERE 
+    a.appt_date BETWEEN @FromDate AND @ToDate
+    AND a.status = 'SCHEDULED'
+    AND (@Region IS NULL OR p.region = @Region)
+ORDER BY a.appt_date, p.region;
