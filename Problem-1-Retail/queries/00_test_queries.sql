@@ -11,14 +11,14 @@ ORDER BY order_id ASC;
 
 -------------------------------------------------------------
 
-PRINT '========== CUSTOMERS ==========';
+SELECT '========== CUSTOMERS ==========' AS [Header];
 SELECT * FROM customers;
 
-PRINT '========== PRODUCTS ==========';
+SELECT '========== PRODUCTS ==========' AS [Header];
 SELECT * FROM products;
 
-PRINT '========== ORDERS ==========';
+SELECT '========== ORDERS ==========' AS [Header];
 SELECT * FROM orders ORDER BY order_id;
 
-PRINT '========== ORDER ITEMS ==========';
+SELECT '========== ORDER ITEMS ==========' AS [Header];
 SELECT * FROM order_items ORDER BY order_id;
