@@ -1,5 +1,3 @@
-
-
 SELECT 
     p.patient_id,
     p.name,
