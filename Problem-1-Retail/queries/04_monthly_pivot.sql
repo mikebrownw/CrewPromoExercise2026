@@ -1,3 +1,5 @@
+PRINT '========== QUERY 4: Pivot 2025 monthly revenue per category into 12 columns. ==========';
+
 WITH monthly_category_revenue AS (
     -- First, aggregate revenue by category and month
     SELECT 
