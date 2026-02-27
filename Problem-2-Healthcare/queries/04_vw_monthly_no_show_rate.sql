@@ -73,8 +73,8 @@ SELECT
     p.name AS patient_name,
     p.region,
     'Northeast' AS test_region,  -- Change this to test
-    '2025-07-01' AS test_from,
-    '2025-12-31' AS test_to
+    '2023-07-01' AS test_from,
+    '2026-12-31' AS test_to
 INTO #test_results
 FROM appointments a
 INNER JOIN patients p ON a.patient_id = p.patient_id
@@ -95,7 +95,7 @@ SELECT
 FROM appointments a
 INNER JOIN patients p ON a.patient_id = p.patient_id
 WHERE 
-    a.appt_date BETWEEN '2025-07-01' AND '2025-12-31'
+    a.appt_date BETWEEN '2023-07-01' AND '2026-12-31'
     AND a.status = 'SCHEDULED'
     AND p.region = 'Northeast';
 
