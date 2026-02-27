@@ -3,7 +3,8 @@
 -- Includes partitioning strategy and index recommendations
 
 /* =======================================================================
-   MATERIALIZED VIEW PROPOSAL
+   '========== QUERY 4: Propose a Materialized View for daily events by country/campaign with partitioning on
+event_time and indexes on (country, event_time). =========='
    ======================================================================= */
 
 -- STEP 1: Create the base view with SCHEMABINDING (required for indexed views)
