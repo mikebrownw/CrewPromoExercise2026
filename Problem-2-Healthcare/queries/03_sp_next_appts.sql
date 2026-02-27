@@ -2,6 +2,9 @@
 -- Purpose: Stored procedure to return upcoming scheduled appointments
 -- With optional region filtering
 
+PRINT '========== QUERY 3: Create a procedure sp_next_appts(@Region NULL, @FromDate, @ToDate) that returns
+upcoming scheduled appointments (filter region if provided). ==========';
+
 CREATE OR ALTER PROCEDURE sp_next_appts
     @Region VARCHAR(50) = NULL,  -- NULL means all regions
     @FromDate DATE,
