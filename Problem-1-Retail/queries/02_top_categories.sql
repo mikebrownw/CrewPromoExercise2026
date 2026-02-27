@@ -1,6 +1,8 @@
 -- SQL Server (T-SQL)
 -- Purpose: Show categories with ≥ $1M revenue in 2025.
 
+PRINT '========== QUERY 2: Show categories with ≥ $1M revenue in 2025. ==========';
+
 SELECT 
     p.category,
     -- Calculate total revenue with proper decimal handling
