@@ -2,6 +2,10 @@
 -- Purpose: Create view for monthly no-show rate analysis
 -- Includes discussion of indexes and partitioning
 
+
+PRINT '========== QUERY 4: Create view vw_monthly_no_show_rate and discuss indexes (e.g., (patient_id, appt_date)),
+and partitioning by appt_date. ==========';
+
 CREATE OR ALTER VIEW vw_monthly_no_show_rate
 AS
 WITH monthly_stats AS (
