@@ -59,6 +59,45 @@ GO
 -- Grant select permissions (adjust as needed)
 -- GRANT SELECT ON vw_monthly_no_show_rate TO ANALYST_ROLE;
 
+------------------------------------------------------------------------
+-- Alternative CTE (Common Table Expression), for when unable to test view ^
+SELECT 
+    a.appt_id,
+    a.appt_date,
+    a.status,
+    p.patient_id,
+    p.name AS patient_name,
+    p.region,
+    'Northeast' AS test_region,  -- Change this to test
+    '2025-07-01' AS test_from,
+    '2025-12-31' AS test_to
+INTO #test_results
+FROM appointments a
+INNER JOIN patients p ON a.patient_id = p.patient_id
+WHERE 1=0;  -- Create empty structure
+
+-- Then query with your test parameters
+INSERT INTO #test_results
+SELECT 
+    a.appt_id,
+    a.appt_date,
+    a.status,
+    p.patient_id,
+    p.name,
+    p.region,
+    'Northeast' AS test_region,
+    '2025-07-01' AS test_from,
+    '2025-12-31' AS test_to
+FROM appointments a
+INNER JOIN patients p ON a.patient_id = p.patient_id
+WHERE 
+    a.appt_date BETWEEN '2025-07-01' AND '2025-12-31'
+    AND a.status = 'SCHEDULED'
+    AND p.region = 'Northeast';
+
+-- View results
+SELECT * FROM #test_results;
+
 /* =======================================================================
    PERFORMANCE OPTIMIZATION DISCUSSION
    ======================================================================= */
