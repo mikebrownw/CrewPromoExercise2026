@@ -66,7 +66,7 @@ GO
 
 -- Test the logic without creating a procedure (Parameterized Query)
 DECLARE @Region VARCHAR(50) = NULL;  -- Change to 'Northeast' to test filtering
-DECLARE @FromDate DATE = '2025-07-01';
+DECLARE @FromDate DATE = '2025-05-01';
 DECLARE @ToDate DATE = '2025-12-31';
 
 SELECT 
