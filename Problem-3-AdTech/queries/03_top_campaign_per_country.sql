@@ -2,6 +2,8 @@
 -- Purpose: Return the top campaign by events per country in Q4 2025
 -- Uses window functions with ranking
 
+PRINT '========== QUERY 3: Return the top campaign by events per country in Q4 2025. ==========';
+
 WITH campaign_stats AS (
     -- First, aggregate events by country and campaign
     SELECT 
