@@ -1,3 +1,11 @@
+SELECT '===== PATIENTS =====' AS [Header];
+SELECT * FROM patients;
+
+SELECT '===== APPOINTMENTS =====' AS [Header];
+SELECT * FROM appointments;
+
+--------------------------------------------------
+
 -- Test Question 1
 SELECT * FROM patients_with_no_recent_appts;
 
