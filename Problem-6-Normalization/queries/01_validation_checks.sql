@@ -35,7 +35,7 @@ SELECT
     'Orphaned Orders' AS check_name,
     COUNT(*) AS count
 FROM fact_orders f
-WHERE NOT EXISTS (SELECT 1 FROM dim_customer c WHERE c.customer_id = f.customer_id)
+WHERE NOT EXISTS (SELECT 1 FROM dim_customer2 c WHERE c.customer_id = f.customer_id)
    OR NOT EXISTS (SELECT 1 FROM dim_product p WHERE p.product_id = f.product_id)
    OR NOT EXISTS (SELECT 1 FROM dim_date d WHERE d.date_key = f.order_date_key);
 
@@ -47,7 +47,7 @@ WHERE NOT EXISTS (SELECT 1 FROM dim_customer c WHERE c.customer_id = f.customer_
 SELECT 
     email,
     COUNT(*) AS duplicate_count
-FROM dim_customer
+FROM dim_customer2
 GROUP BY email
 HAVING COUNT(*) > 1;
 
@@ -91,7 +91,7 @@ SELECT
     customer_id,
     email,
     membership_date
-FROM dim_customer
+FROM dim_customer2
 WHERE membership_date > CAST(GETDATE() AS DATE);
 
 -- Orders with unusually high quantities (potential data entry errors)
@@ -109,7 +109,7 @@ WHERE quantity > 1000 OR price > 100000;
 SELECT 
     'Customer Count' AS metric,
     COUNT(*) AS value
-FROM dim_customer
+FROM dim_customer2
 UNION ALL
 SELECT 
     'Product Count',
