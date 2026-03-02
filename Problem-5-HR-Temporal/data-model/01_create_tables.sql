@@ -1,7 +1,7 @@
 -- SQL Server (T-SQL)
 -- Complete Data Model for HR/Temporal/Security
 
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS users5;
 DROP TABLE IF EXISTS comp_changes;
 DROP TABLE IF EXISTS employees;
 
@@ -27,7 +27,7 @@ CREATE TABLE comp_changes (
 );
 
 -- Create users table with JSON profile
-CREATE TABLE users (
+CREATE TABLE users5 (
     user_id INT PRIMARY KEY,
     region VARCHAR(50) NOT NULL,
     profile_json NVARCHAR(MAX) NOT NULL,
@@ -38,6 +38,6 @@ CREATE TABLE users (
 -- Create indexes for performance
 CREATE INDEX idx_employees_manager ON employees(manager_id);
 CREATE INDEX idx_comp_changes_emp_dates ON comp_changes(emp_id, effective_from, effective_to);
-CREATE INDEX idx_users_region ON users(region);
+CREATE INDEX idx_users_region ON users5(region);
 
 PRINT 'HR/Temporal tables created successfully';
