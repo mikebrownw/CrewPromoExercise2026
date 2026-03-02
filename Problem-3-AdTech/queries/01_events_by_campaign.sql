@@ -2,6 +2,8 @@
 -- Purpose: Count events by utm.campaign for US and CA in Q4 2025
 -- Demonstrates JSON_VALUE for JSON field extraction
 
+PRINT '========== QUERY 1: Count events by utm.campaign for US, CA in Q4 2025. ==========';
+
 SELECT 
     -- Extract campaign from JSON payload
     JSON_VALUE(e.payload_json, '$.utm.campaign') AS campaign,
