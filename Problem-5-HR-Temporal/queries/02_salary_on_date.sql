@@ -7,6 +7,9 @@
 --What was employee 123’s salary on 2025‑08‑15?
 -- =======================================================================
 
+PRINT '========== QUERY 2: What was employee 123’s salary on 2025‑08‑15?
+ ==========';
+
 SELECT 
     e.emp_id,
     e.name,
