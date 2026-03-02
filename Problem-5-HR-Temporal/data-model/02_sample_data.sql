@@ -1,7 +1,6 @@
 -- SQL Server (T-SQL)
 -- Sample Data for HR/Temporal/Security Exercises
 
--- Insert employees (org chart)
 INSERT INTO employees (emp_id, manager_id, name, dept) VALUES
 -- CEO (top level)
 (100, NULL, 'Sarah CEO', 'Executive'),
@@ -22,7 +21,7 @@ INSERT INTO employees (emp_id, manager_id, name, dept) VALUES
 (113, 111, 'Frank Mgr Backend', 'Engineering'),
 (114, 111, 'Grace Mgr Frontend', 'Engineering'),
 (115, 112, 'Henry Mgr Cloud', 'Engineering'),
-(123, 121, 'Ivy Mgr East Region', 'Sales'),  -- Single entry for 123
+(123, 121, 'Ivy Mgr East Region', 'Sales'),
 (124, 122, 'Jack Mgr West Region', 'Sales'),
 (125, 122, 'Kelly Mgr Central', 'Sales'),
 (132, 131, 'Larry Mgr Recruiting', 'Human Resources'),
@@ -41,12 +40,12 @@ INSERT INTO employees (emp_id, manager_id, name, dept) VALUES
 -- Additional employees for depth testing
 (135, 100, 'Victor Advisor', 'Executive'),
 (136, 110, 'Wendy Architect', 'Engineering'),
-(137, 136, 'Xavier Engineer', 'Engineering'),  -- Level 4
-(138, 137, 'Yuki Intern', 'Engineering');      -- Level 5 - deeper hierarchy
+(137, 136, 'Xavier Engineer', 'Engineering'),
+(138, 137, 'Yuki Intern', 'Engineering');
 
--- Note: The cycle comment is fine to keep
--- (100, 138, 'Sarah CEO', 'Executive');  -- Would create cycle CEO -> Intern -> CEO
-
+-- =======================================================================
+-- STEP 2: Insert comp_changes (salary history)
+-- =======================================================================
 INSERT INTO comp_changes (emp_id, effective_from, effective_to, salary) VALUES
 -- Employee 123 (Ivy) - Salary progression
 (123, '2023-01-01', '2023-12-31', 75000.00),
@@ -78,15 +77,14 @@ INSERT INTO comp_changes (emp_id, effective_from, effective_to, salary) VALUES
 (116, '2024-01-01', '2024-12-31', 65000.00),
 (116, '2025-01-01', '9999-12-31', 70000.00),
 
--- Yuki Intern (138) - deepest level
+-- Yuki Intern (138)
 (138, '2025-06-01', '2025-08-31', 45000.00),
 (138, '2025-09-01', '9999-12-31', 50000.00);
-GO
 
 -- =======================================================================
--- STEP 4: Insert users (with JSON profiles)
+-- STEP 3: Insert users (with JSON profiles)
 -- =======================================================================
-INSERT INTO users (user_id, region, profile_json) VALUES
+INSERT INTO users5 (user_id, region, profile_json) VALUES
 (1001, 'North America', '{"role": "analyst", "permissions": ["read", "write"], "preferences": {"theme": "dark", "notifications": true}}'),
 (1002, 'North America', '{"role": "manager", "permissions": ["read", "write", "delete"], "preferences": {"theme": "light", "notifications": false}}'),
 (1003, 'Europe', '{"role": "analyst", "permissions": ["read"], "preferences": {"theme": "dark", "notifications": true}}'),
@@ -98,20 +96,14 @@ INSERT INTO users (user_id, region, profile_json) VALUES
 (1009, 'North America', '{"role": "analyst", "permissions": ["read"], "preferences": {"theme": "system", "notifications": false}}'),
 (1010, 'Europe', '{"role": "analyst", "permissions": ["read"], "preferences": {"theme": "light", "notifications": true}}');
 
-
 -- =======================================================================
--- Verify data loaded
+-- STEP 4: Verify data loaded
 -- =======================================================================
 SELECT 'employees' AS table_name, COUNT(*) AS row_count FROM employees
 UNION ALL
 SELECT 'comp_changes', COUNT(*) FROM comp_changes
 UNION ALL
-SELECT 'users', COUNT(*) FROM users;
-
--- Show sample of each table
-SELECT TOP 5 * FROM employees ORDER BY emp_id;
-SELECT TOP 5 * FROM comp_changes ORDER BY change_id;
-SELECT TOP 5 * FROM users ORDER BY user_id;
+SELECT 'users5', COUNT(*) FROM users;
 
 PRINT 'All HR sample data inserted successfully';
 
