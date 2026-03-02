@@ -113,6 +113,8 @@ CREATE TABLE fact_orders (
     CONSTRAINT chk_order_not_empty CHECK (LEN(TRIM(order_number)) > 0)
 );
 
+PRINT 'TABLES CREATED';
+
 -- =======================================================================
 -- WHAT WE GAINED:
 -- =======================================================================
