@@ -10,8 +10,8 @@ SELECT '=== COMPENSATION CHANGES TABLE ===' AS section;
 SELECT * FROM comp_changes 
 ORDER BY emp_id, effective_from;
 
--- View all users (with JSON)
-SELECT '=== USERS TABLE ===' AS section;
+-- View all users5 (with JSON)
+SELECT '=== USERS5 TABLE ===' AS section;
 SELECT user_id, region, profile_json FROM users 
 ORDER BY region, user_id;
 
