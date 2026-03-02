@@ -1,6 +1,9 @@
+-- =======================================================================
+-- PROBLEM 6: NORMALIZATION - VIEW ALL TABLES
+-- =======================================================================
 
 -- =======================================================================
--- PART 2: View each table individually
+-- PART 1: View each table individually
 -- =======================================================================
 
 SELECT '=== DIM_CUSTOMER2 TABLE (Customers stored once) ===' AS section;
@@ -40,7 +43,7 @@ ORDER BY date_key;
 SELECT '=== FACT_ORDERS TABLE (Transaction facts) ===' AS section;
 SELECT 
     order_number,
-    date_key AS order_date_key,
+    order_date_key,  -- FIXED: Changed from 'date_key' to 'order_date_key'
     customer_id,
     product_id,
     quantity,
@@ -50,7 +53,7 @@ FROM fact_orders
 ORDER BY order_number, product_id;
 
 -- =======================================================================
--- PART 3: Reconstruct the original denormalized view
+-- PART 2: Reconstruct the original denormalized view
 -- =======================================================================
 
 SELECT '=== RECONSTRUCTED DENORMALIZED VIEW (Original CSV format) ===' AS section;
@@ -68,13 +71,13 @@ SELECT
     dc.membership_date,
     dc.notes
 FROM fact_orders fo
-INNER JOIN dim_date d ON fo.order_date_key = d.date_key
+INNER JOIN dim_date d ON fo.order_date_key = d.date_key  -- This is correct!
 INNER JOIN dim_customer2 dc ON fo.customer_id = dc.customer_id
 INNER JOIN dim_product dp ON fo.product_id = dp.product_id
 ORDER BY fo.order_number, dp.product_number;
 
 -- =======================================================================
--- PART 4: Show relationships (how tables connect)
+-- PART 3: Show relationships (how tables connect)
 -- =======================================================================
 
 SELECT '=== TABLE RELATIONSHIPS (Foreign Keys) ===' AS section;
@@ -88,10 +91,10 @@ SELECT
 UNION ALL
 SELECT 
     'fact_orders',
-    'order_date_key → dim_date.date_key';
+    'order_date_key → dim_date.date_key';  -- FIXED: Shows correct mapping
 
 -- =======================================================================
--- PART 5: Show data distribution
+-- PART 4: Show data distribution
 -- =======================================================================
 
 SELECT '=== DATA COUNTS BY TABLE ===' AS section;
@@ -104,7 +107,7 @@ UNION ALL
 SELECT 'fact_orders', COUNT(*) FROM fact_orders;
 
 -- =======================================================================
--- PART 6: Sample analytics queries (showing benefits of normalization)
+-- PART 5: Sample analytics queries (showing benefits of normalization)
 -- =======================================================================
 
 SELECT '=== ANALYTICS EXAMPLE: Revenue by Customer ===' AS section;
