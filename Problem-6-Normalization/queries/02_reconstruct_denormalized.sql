@@ -36,7 +36,7 @@ SELECT
     END AS days_since_membership
 FROM fact_orders fo
 INNER JOIN dim_date d ON fo.order_date_key = d.date_key
-INNER JOIN dim_customer dc ON fo.customer_id = dc.customer_id
+INNER JOIN dim_customer2 dc ON fo.customer_id = dc.customer_id
 INNER JOIN dim_product dp ON fo.product_id = dp.product_id
 ORDER BY fo.order_number, dp.product_number;
 
@@ -63,7 +63,7 @@ SELECT
     CASE WHEN dc.membership_date > CAST(GETDATE() AS DATE) THEN 'Future Date' ELSE 'OK' END AS membership_flag
 FROM fact_orders fo
 INNER JOIN dim_date d ON fo.order_date_key = d.date_key
-INNER JOIN dim_customer dc ON fo.customer_id = dc.customer_id
+INNER JOIN dim_customer2 dc ON fo.customer_id = dc.customer_id
 INNER JOIN dim_product dp ON fo.product_id = dp.product_id;
 
 -- =======================================================================
@@ -84,7 +84,7 @@ SELECT
     STRING_AGG(dp.product_name + ' (' + CAST(fo.quantity AS VARCHAR) + ')', '; ') AS products_purchased
 FROM fact_orders fo
 INNER JOIN dim_date d ON fo.order_date_key = d.date_key
-INNER JOIN dim_customer dc ON fo.customer_id = dc.customer_id
+INNER JOIN dim_customer2 dc ON fo.customer_id = dc.customer_id
 INNER JOIN dim_product dp ON fo.product_id = dp.product_id
 GROUP BY fo.order_number
 ORDER BY fo.order_number;
