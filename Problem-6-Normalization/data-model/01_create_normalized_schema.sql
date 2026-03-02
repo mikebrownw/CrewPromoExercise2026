@@ -1,5 +1,5 @@
 -- SQL Server (T-SQL)
--- Normalized Data Model for Orders (3NF- Thrid Normal Form)
+-- Normalized Data Model for Orders (3NF- Third Normal Form)
 
 -- =======================================================================
 -- WHAT WE'RE STARTING WITH (Denormalized CSV):
