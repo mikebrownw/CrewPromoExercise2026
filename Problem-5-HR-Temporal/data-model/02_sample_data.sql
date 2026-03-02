@@ -57,3 +57,5 @@ INSERT INTO employees (emp_id, manager_id, name, dept) VALUES
 
 -- Note: The cycle comment is fine to keep
 -- (100, 138, 'Sarah CEO', 'Executive');  -- Would create cycle CEO -> Intern -> CEO
+
+PRINT 'HR sample data inserted successfully';
