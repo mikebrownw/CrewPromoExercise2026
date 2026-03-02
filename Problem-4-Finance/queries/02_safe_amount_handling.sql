@@ -1,20 +1,17 @@
 -- SQL Server (T-SQL)
 -- Purpose: Safely handle amount field that may contain text
 
-PRINT '===== Assume ledger.amount can be text in some source, how would you handle that data in a
+PRINT '===== QUERY 2:  Assume ledger.amount can be text in some source, how would you handle that data in a
 safe manner to ensure it’s an amount? =====';
 
--- Use TRY_CAST to safely convert text to numbers
--- Invalid values become NULL instead of crashing
-
+-- Remove symbols first, then convert, default to 0 if still invalid
 SELECT 
-    txn_id,
-    -- Safely convert amount text to decimal
-    TRY_CAST(amount AS DECIMAL(18,2)) AS safe_amount,
-    -- Identify problematic records
-    CASE 
-        WHEN TRY_CAST(amount AS DECIMAL(18,2)) IS NULL 
-        THEN 'Invalid amount format'
-        ELSE 'Valid'
-    END AS amount_status
+    amount,
+    ISNULL(
+        TRY_CAST(
+            REPLACE(REPLACE(amount, '$', ''), ',', '') 
+            AS DECIMAL(18,2)
+        ), 
+        0.00
+    ) AS clean_amount
 FROM ledger_staging;
