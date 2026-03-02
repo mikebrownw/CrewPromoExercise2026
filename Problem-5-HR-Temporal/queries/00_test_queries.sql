@@ -1,3 +1,22 @@
+-- View all employees (org chart)
+SELECT '=== EMPLOYEES TABLE ===' AS section;
+SELECT * FROM employees 
+ORDER BY 
+    CASE WHEN manager_id IS NULL THEN emp_id ELSE manager_id END,
+    emp_id;
+
+-- View all compensation changes
+SELECT '=== COMPENSATION CHANGES TABLE ===' AS section;
+SELECT * FROM comp_changes 
+ORDER BY emp_id, effective_from;
+
+-- View all users (with JSON)
+SELECT '=== USERS TABLE ===' AS section;
+SELECT user_id, region, profile_json FROM users 
+ORDER BY region, user_id;
+
+-----------------------------------------------------------------------------------
+
 -- Test Question 1: Chain of command
 SELECT * FROM EmployeeHierarchy ORDER BY depth, dept;
 
