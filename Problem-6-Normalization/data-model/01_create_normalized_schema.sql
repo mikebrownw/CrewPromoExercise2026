@@ -22,9 +22,9 @@ PROBLEMS with this structure:
 -- =======================================================================
 
 -- -----------------------------------------------------------------------
--- TABLE 1: dim_customer - Store each customer ONCE
+-- TABLE 1: dim_customer2 - Store each customer ONCE
 -- -----------------------------------------------------------------------
-CREATE TABLE dim_customer (
+CREATE TABLE dim_customer2 (
     customer_id INT PRIMARY KEY,           -- Unique ID for each customer
     email VARCHAR(100) NOT NULL,           -- Customer email
     full_name VARCHAR(100) NOT NULL,       -- Customer name
@@ -91,7 +91,7 @@ This table is "thin" - it only contains:
 CREATE TABLE fact_orders (
     order_number VARCHAR(50) NOT NULL,      -- Order ID from CSV
     order_date_key INT NOT NULL,            -- Points to dim_date
-    customer_id INT NOT NULL,                -- Points to dim_customer
+    customer_id INT NOT NULL,                -- Points to dim_customer2
     product_id INT NOT NULL,                  -- Points to dim_product
     quantity INT NOT NULL,                    -- How many bought
     price DECIMAL(18,2) NOT NULL,             -- Price per unit
@@ -101,7 +101,7 @@ CREATE TABLE fact_orders (
     
     -- Link to other tables (referential integrity)
     CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) 
-        REFERENCES dim_customer(customer_id),
+        REFERENCES dim_customer2(customer_id),
     CONSTRAINT fk_orders_product FOREIGN KEY (product_id) 
         REFERENCES dim_product(product_id),
     CONSTRAINT fk_orders_date FOREIGN KEY (order_date_key) 
@@ -133,6 +133,6 @@ After (Normalized):
 
 HOW THEY CONNECT:
     fact_orders.order_date_key → dim_date.date_key
-    fact_orders.customer_id    → dim_customer.customer_id
+    fact_orders.customer_id    → dim_customer2.customer_id
     fact_orders.product_id      → dim_product.product_id
 */
