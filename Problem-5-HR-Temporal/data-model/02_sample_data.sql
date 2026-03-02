@@ -1,6 +1,17 @@
 -- SQL Server (T-SQL)
 -- Sample Data for HR/Temporal/Security Exercises
 
+-- Create users table only if it doesn't exist
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'users' AND type = 'U')
+BEGIN
+    CREATE TABLE users (
+        user_id INT PRIMARY KEY,
+        region VARCHAR(50) NOT NULL,
+        profile_json NVARCHAR(MAX) NOT NULL,
+        CONSTRAINT chk_valid_json_profile CHECK (ISJSON(profile_json) = 1)
+    );
+END
+
 -- Insert employees (org chart)
 INSERT INTO employees (emp_id, manager_id, name, dept) VALUES
 -- CEO (top level)
