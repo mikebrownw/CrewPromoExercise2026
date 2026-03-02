@@ -1,9 +1,9 @@
 -- SQL Server (T-SQL)
 -- Complete Data Model for HR/Temporal/Security
 
-IF OBJECT_ID('users', 'U') IS NOT NULL DROP TABLE users;
-IF OBJECT_ID('comp_changes', 'U') IS NOT NULL DROP TABLE comp_changes;
-IF OBJECT_ID('employees', 'U') IS NOT NULL DROP TABLE employees;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS comp_changes;
+DROP TABLE IF EXISTS employees;
 
 -- Create employees table with self-referencing hierarchy
 CREATE TABLE employees (
